@@ -1,7 +1,7 @@
 const net = require('net'); 
 const options= {
-    port: 80, 
-    host: 'tcp-net1.onrender.com'
+    port: 3500, 
+    host: 'localhost'
 }
 
 const client = net.createConnection(options); 

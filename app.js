@@ -1,7 +1,7 @@
 const net = require('net'); 
 var server = net.createServer(); 
 
-port = 3500; 
+port = process.env.PORT || 3500; 
 ip = 'my_host'; 
 
 server.on("connection", (socket) => { 
