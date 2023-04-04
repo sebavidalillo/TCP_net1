@@ -22,7 +22,7 @@ server.on('error', (e) => {
     console.log('Address in use, retrying...'); 
     setTimeout(() => { 
       server.close(); 
-      server.listen(PORT, HOST); 
+      server.listen(port); 
     }, 1000); 
   } 
   else { 
