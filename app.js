@@ -5,7 +5,7 @@ port = process.env.PORT || 3000;
 ip = 'my_host'; 
 
 server.on("connection", (socket) => { 
-  console.log("new client connection is made", socket.remoteAddress + ":" + socket.remotePort); 
+  console.log("Nueva conexión en", socket.remoteAddress + ":" + socket.remotePort); 
   
   // SOCKET.ON DATA //
   socket.on("data", (data) => { 
@@ -52,7 +52,7 @@ function GetMessages(ReporteSeparadoPorComas){
         break; 
       case '+RESP:GTFRI':
         // rutina de asignación de campos para GTFRI;
-        return RESP_GTRI(ReporteSeparadoPorComas); 
+        return RESP_GTFRI(ReporteSeparadoPorComas); 
         break;
       case '+RESP:GTCAN':
         //rutina de asignación de campos para GTCAN; 
@@ -61,7 +61,7 @@ function GetMessages(ReporteSeparadoPorComas){
 }
 
 
-function RESP_GTRI(ReporteSeparadoPorComas){
+function RESP_GTFRI(ReporteSeparadoPorComas){
     const mensajes = {
       IMEI: ReporteSeparadoPorComas[2], 
       ReportMask: ReporteSeparadoPorComas[6],
@@ -75,6 +75,7 @@ function RESP_GTRI(ReporteSeparadoPorComas){
     return mensajes; 
 }
 
+
 function RESP_GTCAN(ReporteSeparadoPorComas){
   const mensajes = {
     IMEI: ReporteSeparadoPorComas[2],
@@ -83,19 +84,3 @@ function RESP_GTCAN(ReporteSeparadoPorComas){
   };
   return mensajes; 
 }
-
-
-// const objeto = {
-//   RESP: ReporteSeparadoPorComas[0],
-//   id: ReporteSeparadoPorComas[1],
-//   imei: ReporteSeparadoPorComas[2],
-//   velocidad: ReporteSeparadoPorComas[5],
-//   latitud: ReporteSeparadoPorComas[11],
-//   longitud: ReporteSeparadoPorComas[12],
-//   fecha: ReporteSeparadoPorComas[13],
-//   ignicion: ReporteSeparadoPorComas[24],
-//   bateria: ReporteSeparadoPorComas[25],
-//   timestamp: ReporteSeparadoPorComas[28]
-// };
-
-

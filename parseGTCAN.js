@@ -1,4 +1,6 @@
-const CamposMascara = [ 
+//ESTE CÓDIGO FUNCIONA SOLO PARA REPORTE CAN SIN EXPANSION MASK // 
+
+const MascaraCAN = [ 
     "VIN",
     "Ignition Key",
     "Total Distance",
@@ -40,6 +42,13 @@ const mensaje = "+RESP:GTCAN,270F01,863457051459871,,0,1,C0000134,H1227320,660,0
 
 const MensajeSeparadoPorComas = mensaje.split(','); 
 
+/*
+const DatosFinales ={ 
+    'Reporte':    
+}
+*/
+
+
 // Extraemos la máscara del mensaje en binario
 const mascara = parseInt(hex2bin(MensajeSeparadoPorComas[6]),2); 
 
@@ -49,12 +58,12 @@ console.log(mascara);
 const camposSeleccionados = [];
 
 // Iterar sobre cada uno de los bits de la máscara
-for (let i = 0; i < CamposMascara.length; i++) {
+for (let i = 0; i < MascaraCAN.length; i++) {
   // Comprueba si el bit actual está establecido en la máscara
   if ((mascara & (1 << i)) !== 0) {
     // Si el bit está establecido, añadimos el campo correspondiente al array de campos seleccionados
     //console.log('bit ', i+1, 'se reporta ', CamposMascara[i]); 
-    if(CamposMascara[i] == 'GNSS Info'){
+    if(MascaraCAN[i] == 'GNSS Info'){
       camposSeleccionados.push('Reserved PreGNSS1');
       camposSeleccionados.push('Reserved PreGNSS2');
         camposSeleccionados.push('GNSS Accuracy');
@@ -65,14 +74,14 @@ for (let i = 0; i < CamposMascara.length; i++) {
         camposSeleccionados.push('Latitude');
         camposSeleccionados.push('GNSSUTC');
     }
-    else if (CamposMascara[i] == 'Cell Info'){
+    else if (MascaraCAN[i] == 'Cell Info'){
       camposSeleccionados.push('MCC');
       camposSeleccionados.push('MNC');
       camposSeleccionados.push('LAC');
       camposSeleccionados.push('Cell ID');
     }
     else{
-    camposSeleccionados.push(CamposMascara[i]);
+    camposSeleccionados.push(MascaraCAN[i]);
     }
   }
 }
@@ -92,20 +101,13 @@ for (let i = 0; i < camposSeleccionados.length; i++) {
   valoresPorCampo[campo] = valor;
 }
 
-
+// Mostramos los valores recibidos asociados a los campos seleccionados
 console.log(MensajeSeparadoPorComas);
 console.log(camposSeleccionados); 
-// Mostramos los valores recibidos asociados a los campos seleccionados
 console.log(valoresPorCampo);
 
 
-
-
-
-
-
 // FUNCIONES DE ESTE MODULO //
-
 
 //funcion parse HEX a BINARIO 
 function hex2bin(n){  
