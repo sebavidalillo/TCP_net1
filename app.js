@@ -1,8 +1,30 @@
 const net = require('net'); 
 var server = net.createServer(); 
+var mysql = require('mysql'); 
 
 port = process.env.PORT || 3000; 
 ip = 'my_host'; 
+
+database = mysql.createPool({
+  connectionLimit:10,
+  host:'localhost',
+  user:'root',
+  password:'123456789',
+  database:'somax_clon1', //
+  debug:false
+});
+
+database.on('connection', function(connection){
+  console.log('Conected to holamundo database'); 
+
+  connection.on('error', (error)=>{
+      throw(error);
+  });
+
+  connection.on('close', function(err){
+      console.error(new Date(), 'MySQL close', err);
+  });
+}); 
 
 server.on("connection", (socket) => { 
   console.log("Nueva conexión en", socket.remoteAddress + ":" + socket.remotePort); 
@@ -14,6 +36,17 @@ server.on("connection", (socket) => {
     const ReporteSeparadoPorComas = data.toString().split(',');
     const messages = GetMessages(ReporteSeparadoPorComas);  
     console.log(messages); 
+    database.query('insert into messages (message) value (?);',[data],(error,result)=>{
+      if(error){
+          throw error;
+      }
+      else{
+          console.log('POSTED');
+      }
+  });
+
+
+
   }); 
 
   socket.once("close", () => { 

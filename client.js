@@ -3,7 +3,7 @@ const readLine= require('readline-sync');
 
 const options= {
     port: 3000, 
-    host: 'localhost'
+    host: '18.188.42.52'
 }
 
 const client = net.createConnection(options); 
