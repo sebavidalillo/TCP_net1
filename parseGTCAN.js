@@ -91,13 +91,7 @@ const valoresPorCampo = {};
 // Iteramos sobre los campos seleccionados y los asociamos con los valores recibidos
 for (let i = 0; i < camposSeleccionados.length; i++) {
   const valor = MensajeSeparadoPorComas[i+7];
-  /*if(valor == ''){
-    campo = 'Reserved'+ i.toString();
-    camposSeleccionados.splice(i,0,campo)
-  }
-  else{ campo = camposSeleccionados[i]; }; */
   campo = camposSeleccionados[i];
-  //console.log(valor, campo, i);
   valoresPorCampo[campo] = valor;
 }
 
