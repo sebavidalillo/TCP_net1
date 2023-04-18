@@ -96,7 +96,7 @@ for (let i = 0; i < camposSeleccionados.length; i++) {
 }
 
 // Mostramos los valores recibidos asociados a los campos seleccionados
-console.log(MensajeSeparadoPorComas);
+console.log(MensajeSeparadoPorComas); 
 console.log(camposSeleccionados); 
 console.log(valoresPorCampo);
 
