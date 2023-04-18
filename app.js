@@ -26,7 +26,6 @@ database.on('connection', function(connection){
   });
 }); 
 
-
 server.on("connection", (socket) => { 
   console.log("Nueva conexión en", socket.remoteAddress + ":" + socket.remotePort); 
   
@@ -54,6 +53,8 @@ server.on("connection", (socket) => {
   }); 
   socket.write('SERVER: Hello! Connection successfully made.<br>'); 
 }); 
+
+
 
 server.on('error', (e) => { 
   if (e.code === 'EADDRINUSE') { 
