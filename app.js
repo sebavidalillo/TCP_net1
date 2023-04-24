@@ -5,28 +5,24 @@ import {RESP_GTCAN} from './GTCAN.js';
 
 //port = process.env.PORT || 3000; 
 const port = 3000;
+var database; 
 //ip = 'my_host'; 
 
 
-const database = mysql.createPool({
-  connectionLimit:10,
-  host:'demo-gv3000-1.cnmsiceec0ea.us-east-2.rds.amazonaws.com',
-  user:'admin',
-  password:'123456789',
-  database:'demoInitial', //
-  debug:false
-});
-
-database.on('connection', function(connection){
-  console.log('Conected to demoInitial database'); 
-  connection.on('error', (error)=>{
-      throw(error);
-  });
-
-  connection.on('close', function(err){
-      console.error(new Date(), 'MySQL close', err);
-  });
-}); 
+function connectionDataBase(){
+  database = mysql.createPool({
+    connectionLimit:10,
+    host:'demo-gv3000-1.cnmsiceec0ea.us-east-2.rds.amazonaws.com',
+    user:'admin',
+    password:'123456789',
+    database:'demoInitial', //
+    debug:false
+  })
+  //getDataTypes();
+  //getDevices();
+  //getCards();
+  //getCities();
+}
 
 server.on("connection", (socket) => { 
   console.log("Nueva conexión en", socket.remoteAddress + ":" + socket.remotePort); 
@@ -42,7 +38,7 @@ server.on("connection", (socket) => {
           throw error;
       }
       else{
-          console.log('POSTED');
+          console.log('Inserted in DataBase');
       }
   });
  }); 
@@ -69,13 +65,6 @@ server.on('error', (e) => {
     console.log("Server failed.") 
   } 
 }); 
-
-server.listen(port, ()=>{
-  console.log('sevidor corriendo en ', port); 
-});
-
-
-
 
 // FUNCIONES // 
 
@@ -110,3 +99,31 @@ function RESP_GTFRI(ReporteSeparadoPorComas){
     return mensajes; 
 }
 
+
+
+function initServer(){
+  try {
+      console.log('initServer')
+      if(server.listening === false){
+          //cleanInterval();
+          connectionDataBase();
+          database.on('connection', function(connection){
+            console.log('Conected to demoInitial database'); 
+            connection.on('error', (error)=>{
+                throw(error);
+            });
+          
+            connection.on('close', function(err){
+                console.error(new Date(), 'MySQL close', err);
+            });
+          }); 
+          server.listen(port,()=>{
+            console.log('sevidor corriendo en ', port); 
+          });
+      }
+  } catch (error) {
+      console.log('error: '+error+'')
+  }
+}
+
+initServer();
