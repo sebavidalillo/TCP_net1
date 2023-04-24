@@ -5,7 +5,8 @@ import {RESP_GTCAN} from './GTCAN.js';
 
 //port = process.env.PORT || 3000; 
 const port = 3000;
-var database; 
+var database,
+dataTypes = []; 
 //ip = 'my_host'; 
 
 
@@ -18,7 +19,7 @@ function connectionDataBase(){
     database:'demoInitial', //
     debug:false
   })
-  //getDataTypes();
+  getDataTypes();
   //getDevices();
   //getCards();
   //getCities();
@@ -67,6 +68,25 @@ server.on('error', (e) => {
 }); 
 
 // FUNCIONES // 
+
+function getDataTypes(){
+  try {
+      console.log("Finding DataTypes")
+      var consult = 'select id_devices_data_types, name as nameDataType from md_fleet_devices_data_types where dateDelete is null',
+      query = mysql.format(consult)
+      database.query(query, function(error,rows,fields){
+          if(error){
+              log(error);
+          }else{
+              dataTypes = rows;
+          }
+      })
+  } catch (error) {
+      console.log('error: '+error+'')
+  }
+}
+
+
 
 function GetMessages(ReporteSeparadoPorComas){ 
     switch(ReporteSeparadoPorComas[0]){
