@@ -7,53 +7,18 @@ import {RESP_GTCAN} from './GTCAN.js';
 const port = 3000;
 //ip = 'my_host'; 
 
-const MascaraCAN = [
-  "VIN",
-  "Ignition Key",
-  "Total Distance",
-  "Total Fuel Used",
-  "RPM",
-  "Vehicle Speed",
-  "Engine Coolant Temperature",
-  "Fuel Consumption",
-  "Fuel Level",
-  "Range",
-  "Accel Pedal Pressure",
-  "Total Engine Hours",
-  "Total Driving Time",
-  "Total Enginge Idle Time",
-  "Total Idle Fuel Used",
-  "Axle Weight 2nd",
-  "Tachograph Information",
-  "Detailed Info",
-  "Lights",
-  "Doors",
-  "Total Vehicle Overspeed Time",
-  "Total Vehicle Engine Overspeed Time",
-  "Total Distance Impulses",
-  "Reserved",
-  "Reserved",
-  "Reserved",
-  "Reserved",
-  "Reserved",
-  "Reserved",
-  "CAN Expansion Mask",
-  "GNSS Info",
-  "Cell Info"
-];
 
 const database = mysql.createPool({
   connectionLimit:10,
-  host:'localhost',
-  user:'root',
+  host:'demo-gv3000-1.cnmsiceec0ea.us-east-2.rds.amazonaws.com',
+  user:'admin',
   password:'123456789',
-  database:'somax_clon1', //
+  database:'demoInitial', //
   debug:false
 });
 
 database.on('connection', function(connection){
-  console.log('Conected to holamundo database'); 
-
+  console.log('Conected to demoInitial database'); 
   connection.on('error', (error)=>{
       throw(error);
   });
@@ -125,7 +90,7 @@ function GetMessages(ReporteSeparadoPorComas){
         break;
       case '+RESP:GTCAN':
         //rutina de asignación de campos para GTCAN; 
-        return RESP_GTCAN(ReporteSeparadoPorComas, MascaraCAN); 
+        return RESP_GTCAN(ReporteSeparadoPorComas); 
         break; 
     }
 }

@@ -34,7 +34,7 @@ const MascaraCAN = [
 ];
 
 //Rutina que entrega objeto con información reportada por CAN. Input: Mensaje separado por comas, MascaraCAN. 
-export function RESP_GTCAN(MensajeSeparadoPorComas, MascaraCAN) {
+export function RESP_GTCAN(MensajeSeparadoPorComas) {
     // Extraemos la máscara del mensaje en binario
     const mascara = parseInt((parseInt(MensajeSeparadoPorComas[6], 16).toString(2)).padStart(8, '0'), 2);
     
