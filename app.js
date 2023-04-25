@@ -2,21 +2,26 @@ import net from 'net';
 var server = net.createServer(); 
 import mysql from 'mysql'; 
 import {RESP_GTCAN} from './GTCAN.js';
+import { exec } from "child_process";
+import moment from 'moment-timezone';
 
 //port = process.env.PORT || 3000; 
 const port = 3000;
 var database,
-dataTypes = []; 
+dataTypes = [],
+clients=[],
+dateTimeFormat = 'YYYY-MM-DD HH:mm:ss ZZ',
+timeZone = '-04:00'; 
 //ip = 'my_host'; 
 
 
 function connectionDataBase(){
   database = mysql.createPool({
     connectionLimit:10,
-    host:'demo-gv3000-1.cnmsiceec0ea.us-east-2.rds.amazonaws.com',
-    user:'admin',
+    host:'localhost',
+    user:'root',
     password:'123456789',
-    database:'demoInitial', //
+    database:'somax_clon1', //
     debug:false
   })
   getDataTypes();
@@ -25,15 +30,48 @@ function connectionDataBase(){
   //getCities();
 }
 
+function getTimeZone(){
+  exec("date +%:z", (error, stdout, stderr) => {
+    if(error || stderr){ return ''; }
+    // timeZone = stdout.replace('\n','');
+  });
+}
+
 server.on("connection", (socket) => { 
-  console.log("Nueva conexión en", socket.remoteAddress + ":" + socket.remotePort); 
-  
+  //console.log("Nueva conexión en", socket.remoteAddress + ":" + socket.remotePort); 
+  socket.name = socket.remoteAddress + ':' + socket.remotePort;
+  clients.push({
+      name: socket.name,
+      socket: socket,
+      binary: Buffer.alloc(0,0,'binary'),
+      decoded: [],
+      time: getDateTime(),
+      // timeMilis: new Date().getTime(),
+      // nextUpdateMilis: (new Date().getTime() + 180000),
+      // ip: transformIp(socket.remoteAddress,1),
+      // port: socket.remotePort,
+      // imei: null,
+      // id_devices: null,
+      // request: [],
+      // requestReceive: [],
+      // requestSend: [],
+      // checkRequest: 0,
+      // sendRequest: null,
+      // nextCheckRequest: 0,
+      // cities: []
+  })
+  console.log(clients[0]);
+  console.log('Nueva Conexion: '+socket.name+'')
+
+
+
+
   // SOCKET.ON DATA //
   socket.on("data", (data) => { 
-    console.log(`Datos recibidos: ${data}`);
+    //console.log(`Datos recibidos: ${data}`);
     const ReporteSeparadoPorComas = data.toString().split(',');
-    const messages = GetMessages(ReporteSeparadoPorComas);  
-    console.log(messages); 
+    const messages = GetMessages(ReporteSeparadoPorComas);
+    //console.log(messages); 
     database.query('insert into messages (message) value (?);',[data],(error,result)=>{
       if(error){
           throw error;
@@ -68,6 +106,15 @@ server.on('error', (e) => {
 }); 
 
 // FUNCIONES // 
+function getDateTime(){
+  try {
+    getTimeZone();
+    return moment.utc().utcOffset(timeZone).format(dateTimeFormat);
+  } catch (error) {
+      console.log('error: '+error+'')
+  }
+}
+
 
 function getDataTypes(){
   try {
@@ -86,6 +133,19 @@ function getDataTypes(){
   }
 }
 
+function findDataType(id){
+  try {
+      console.log('findDataType');
+      for (let i = 0; i < dataTypes.length; i++) {
+          if(dataTypes[i].id_devices_data_types == id){
+              return dataTypes[i].nameDataType
+          }
+      }
+      return null;
+  } catch (error) {
+      console.log('error: '+error+'')
+  }
+}
 
 
 function GetMessages(ReporteSeparadoPorComas){ 
