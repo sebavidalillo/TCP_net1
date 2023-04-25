@@ -46,19 +46,19 @@ server.on("connection", (socket) => {
       binary: Buffer.alloc(0,0,'binary'),
       decoded: [],
       time: getDateTime(),
-      // timeMilis: new Date().getTime(),
-      // nextUpdateMilis: (new Date().getTime() + 180000),
-      // ip: transformIp(socket.remoteAddress,1),
-      // port: socket.remotePort,
-      // imei: null,
-      // id_devices: null,
-      // request: [],
-      // requestReceive: [],
-      // requestSend: [],
-      // checkRequest: 0,
-      // sendRequest: null,
-      // nextCheckRequest: 0,
-      // cities: []
+      timeMilis: new Date().getTime(),
+      nextUpdateMilis: (new Date().getTime() + 180000),
+      ip: transformIp(socket.remoteAddress,1),
+      port: socket.remotePort,
+      imei: null,
+      id_devices: null,
+      request: [],
+      requestReceive: [],
+      requestSend: [],
+      checkRequest: 0,
+      sendRequest: null,
+      nextCheckRequest: 0,
+      cities: []
   })
   console.log(clients[0]);
   console.log('Nueva Conexion: '+socket.name+'')
@@ -147,6 +147,19 @@ function findDataType(id){
   }
 }
 
+function transformIp(ip,format){
+  try {
+      // 1 = ip to int, 2 = int to ip
+      console.log('transformIp')
+      if(format == 1){
+          return ip.split('.').reduce(function(ipInt, octet) { return (ipInt<<8) + parseInt(octet, 10)}, 0) >>> 0;
+      }else{
+          return ( (ipInt>>>24) +'.' + (ipInt>>16 & 255) +'.' + (ipInt>>8 & 255) +'.' + (ipInt & 255) );
+      }
+  } catch (error) {
+      console.log('error: '+error+'')
+  }
+}
 
 function GetMessages(ReporteSeparadoPorComas){ 
     switch(ReporteSeparadoPorComas[0]){
