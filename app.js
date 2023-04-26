@@ -60,27 +60,16 @@ server.on("connection", (socket) => {
       nextCheckRequest: 0,
       cities: []
   })
-  console.log(clients[0]);
+  //console.log(clients[0]);
   console.log('Nueva Conexion: '+socket.name+'')
-
-
-
 
   // SOCKET.ON DATA //
   socket.on("data", (data) => { 
     //console.log(`Datos recibidos: ${data}`);
-    const ReporteSeparadoPorComas = data.toString().split(',');
-    const messages = GetMessages(ReporteSeparadoPorComas);
-    //console.log(messages); 
-    database.query('insert into messages (message) value (?);',[data],(error,result)=>{
-      if(error){
-          throw error;
-      }
-      else{
-          console.log('Inserted in DataBase');
-      }
+    //IF para separar entre stream SM y stream de GV??
+    stream(data,socket); //llena el buffer del cliente de SM. 
+    decodeGV(data); 
   });
- }); 
   socket.once("close", () => { 
     console.log("client connection closed."); 
   }); 
@@ -105,7 +94,31 @@ server.on('error', (e) => {
   } 
 }); 
 
+
+
+
+
+
 // FUNCIONES // 
+
+//Esta función debería hacer toda la rutina de decodificación y guardado. 
+// Abrir otro cliente?? Creo que es innecesario abrir nueva linea de clientes, 
+// debería haber un tag que los identifique.  
+function decodeGV(data){
+  database.query('insert into messages (message) value (?);',[data],(error)=>{
+    if(error){
+        throw error;
+    }
+    else{
+        console.log('Inserted in DataBase');
+    }
+  });
+  const ReporteSeparadoPorComas = data.toString().split(',');
+  const messages = GetMessages(ReporteSeparadoPorComas);  
+  console.log(messages); 
+  //insertIntoBaseData(messages); 
+}
+
 function getDateTime(){
   try {
     getTimeZone();
@@ -155,6 +168,23 @@ function transformIp(ip,format){
           return ip.split('.').reduce(function(ipInt, octet) { return (ipInt<<8) + parseInt(octet, 10)}, 0) >>> 0;
       }else{
           return ( (ipInt>>>24) +'.' + (ipInt>>16 & 255) +'.' + (ipInt>>8 & 255) +'.' + (ipInt & 255) );
+      }
+  } catch (error) {
+      console.log('error: '+error+'')
+  }
+}
+
+function stream(data,socket){
+  try {
+      for (var i = 0; i < clients.length; i++) {
+          if(clients[i].socket === socket){
+              try {
+                  var msg = Buffer.concat([ clients[i].binary, Buffer.from(data,'binary')]);
+                  clients[i].binary = msg;
+              } catch (error) {
+                  clients[i].socket.write("0x10");
+              }
+          }
       }
   } catch (error) {
       console.log('error: '+error+'')
@@ -218,5 +248,14 @@ function initServer(){
       console.log('error: '+error+'')
   }
 }
+
+// server.on('listening',function(){
+//   log('server start '+ip+':'+port+'')
+//   intervals.push(setInterval(function(){  // cada 10 segundos se hace decode Messages, closeOldConnection
+//       decodeMessages();
+//       closeOldConnection();
+//       log('Concurrent connections ('+clients.length+')');
+//   },10000));
+// });
 
 initServer();

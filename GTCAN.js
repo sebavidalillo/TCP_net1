@@ -35,6 +35,11 @@ const MascaraCAN = [
 
 //Rutina que entrega objeto con información reportada por CAN. Input: Mensaje separado por comas, MascaraCAN. 
 export function RESP_GTCAN(MensajeSeparadoPorComas) {
+    const identificador = {
+        Report: MensajeSeparadoPorComas[0], 
+        IMEI: MensajeSeparadoPorComas[2],
+    }
+
     // Extraemos la máscara del mensaje en binario
     const mascara = parseInt((parseInt(MensajeSeparadoPorComas[6], 16).toString(2)).padStart(8, '0'), 2);
     
@@ -79,9 +84,8 @@ export function RESP_GTCAN(MensajeSeparadoPorComas) {
         valoresPorCampo[campo] = valor;
     }
 
-    //console.log(valoresPorCampo);
-
-    return valoresPorCampo; 
+    const valoresFinales = Object.assign(identificador, valoresPorCampo); 
+    return valoresFinales; 
     
 };
 
