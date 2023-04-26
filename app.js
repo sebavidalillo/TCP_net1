@@ -67,7 +67,7 @@ server.on("connection", (socket) => {
   socket.on("data", (data) => { 
     //console.log(`Datos recibidos: ${data}`);
     //IF para separar entre stream SM y stream de GV??
-    stream(data,socket); //llena el buffer del cliente de SM. 
+    //stream(data,socket); //llena el buffer del cliente de SM. 
     decodeGV(data); 
   });
   socket.once("close", () => { 
