@@ -11,7 +11,8 @@ var database,
 dataTypes = [],
 clients=[],
 dateTimeFormat = 'YYYY-MM-DD HH:mm:ss ZZ',
-timeZone = '-04:00'; 
+timeZone = '-04:00',
+querys = []; 
 //ip = 'my_host'; 
 
 
@@ -94,16 +95,11 @@ server.on('error', (e) => {
   } 
 }); 
 
-
-
-
-
-
 // FUNCIONES // 
 
 //Esta función debería hacer toda la rutina de decodificación y guardado. 
 // Abrir otro cliente?? Creo que es innecesario abrir nueva linea de clientes, 
-// debería haber un tag que los identifique.  
+// debería haber un tag que los identifique??
 function decodeGV(data){
   database.query('insert into messages (message) value (?);',[data],(error)=>{
     if(error){
@@ -116,6 +112,20 @@ function decodeGV(data){
   const ReporteSeparadoPorComas = data.toString().split(',');
   const messages = GetMessages(ReporteSeparadoPorComas);  
   console.log(messages); 
+  for(let llave in messages){
+    var id_devices_data_types = 1; 
+    var value = null; 
+    console.log(llave); 
+    if (llave == 'Total Distance'){
+      id_devices_data_types = 83; 
+      value = messages[llave];
+    }else if (llave == 'Vehicle Speed'){
+      id_devices_data_types = 91; 
+      value = messages[llave];      
+    }
+    console.log(id_devices_data_types, value);
+  };
+   
   //insertIntoBaseData(messages); 
 }
 
